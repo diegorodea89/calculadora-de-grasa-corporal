@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BodyMetrics Pro — Calculadora de Grasa Corporal y Composición</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+            <path d="M6 14c0-2.2 2.7-4 6-4s6 1.8 6 4v2c0 1.1-.9 2-2 2h-1l-.6 4h-4.8L9 18H8c-1.1 0-2-.9-2-2v-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>BodyMetrics <span>Pro</span></h1>
+          <p class="subtitle">Análisis antropométrico, composición corporal y gasto energético</p>
+        </div>
+      </div>
+      <div class="unit-toggle" role="group" aria-label="Sistema de unidades">
+        <button type="button" id="btnUnitMetric" class="unit-btn active" data-unit="metric">Métrico (kg / cm)</button>
+        <button type="button" id="btnUnitImperial" class="unit-btn" data-unit="imperial">Imperial (lb / in)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+    <!-- COLUMNA IZQUIERDA: FORMULARIO Y MÉTODOS -->
+    <section class="card form-panel" aria-labelledby="formTitle">
+      <div class="panel-header">
+        <h2 id="formTitle">1. Datos Antropométricos</h2>
+        <span class="badge-live">Cálculo en tiempo real</span>
+      </div>
+
+      <!-- Selección de Sexo -->
+      <div class="field-group">
+        <label class="field-label">Sexo biológico <span class="label-hint">(determina las fórmulas de densidad corporal)</span></label>
+        <div class="sex-selector" role="radiogroup" aria-label="Sexo biológico">
+          <button type="button" class="sex-btn active" data-sex="male" id="sexMale" role="radio" aria-checked="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="10" cy="14" r="5"/>
+              <path d="M19 5l-5.4 5.4M15 5h4v4"/>
+            </svg>
+            Hombre
+          </button>
+          <button type="button" class="sex-btn" data-sex="female" id="sexFemale" role="radio" aria-checked="false">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="10" r="5"/>
+              <path d="M12 15v6M9 18h6"/>
+            </svg>
+            Mujer
+          </button>
+        </div>
+      </div>
+
+      <!-- Datos Base: Edad, Altura, Peso, Actividad -->
+      <div class="inputs-grid base-inputs">
+        <div class="input-box">
+          <label for="inputAge">Edad</label>
+          <div class="input-wrapper">
+            <input type="number" id="inputAge" min="14" max="100" step="1" value="28" />
+            <span class="unit-tag">años</span>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label for="inputHeight">Altura</label>
+          <div class="input-wrapper">
+            <input type="number" id="inputHeight" min="100" max="250" step="0.5" value="175" />
+            <span class="unit-tag" data-unit-type="length">cm</span>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label for="inputWeight">Peso corporal</label>
+          <div class="input-wrapper">
+            <input type="number" id="inputWeight" min="30" max="300" step="0.1" value="76" />
+            <span class="unit-tag" data-unit-type="weight">kg</span>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label for="selectActivity">Nivel de actividad</label>
+          <div class="input-wrapper">
+            <select id="selectActivity">
+              <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
+              <option value="1.375">Ligero (1–3 días/semana)</option>
+              <option value="1.55" selected>Moderado (3–5 días/semana)</option>
+              <option value="1.725">Activo (6–7 días/semana)</option>
+              <option value="1.9">Atleta / Muy intenso (doble sesión)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Selector de Método -->
+      <div class="method-section">
+        <div class="panel-header">
+          <h2>2. Método de Medición</h2>
+        </div>
+
+        <div class="method-tabs" role="tablist" aria-label="Método de cálculo de grasa corporal">
+          <button type="button" class="method-tab active" role="tab" aria-selected="true" data-method="navy" id="tabNavy">
+            <span class="tab-title">Marina EE. UU.</span>
+            <span class="tab-sub">Cinta métrica</span>
+          </button>
+          <button type="button" class="method-tab" role="tab" aria-selected="false" data-method="skinfold" id="tabSkinfold">
+            <span class="tab-title">Jackson-Pollock</span>
+            <span class="tab-sub">Pliegues (Plicómetro)</span>
+          </button>
+          <button type="button" class="method-tab" role="tab" aria-selected="false" data-method="bmi" id="tabBmi">
+            <span class="tab-title">Deurenberg</span>
+            <span class="tab-sub">Estimación por IMC</span>
+          </button>
+        </div>
+
+        <!-- PANEL 1: MARINA DE EE. UU. -->
+        <div class="method-pane active" id="paneNavy" role="tabpanel">
+          <div class="method-info">
+            <div class="method-info-icon" aria-hidden="true">📏</div>
+            <p>Mide los perímetros con una cinta métrica flexible en contacto con la piel sin comprimir el tejido.</p>
+          </div>
+
+          <div class="inputs-grid">
+            <div class="input-box">
+              <label for="inputNeck">
+                Perímetro de Cuello
+                <span class="tooltip-trigger" title="Mide justo debajo de la laringe (nuez de Adán), con la cinta ligeramente inclinada hacia abajo al frente.">?</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="inputNeck" min="20" max="70" step="0.1" value="38.5" />
+                <span class="unit-tag" data-unit-type="length">cm</span>
+              </div>
+              <small class="field-help">Debajo de la laringe, hombros relajados</small>
+            </div>
+
+            <div class="input-box">
+              <label for="inputWaist">
+                Perímetro de Cintura
+                <span class="tooltip-trigger" title="Hombres: a la altura del ombligo. Mujeres: en la parte más estrecha del abdomen.">?</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="inputWaist" min="45" max="200" step="0.1" value="84.0" />
+                <span class="unit-tag" data-unit-type="length">cm</span>
+              </div>
+              <small class="field-help" id="waistHelpText">A nivel del ombligo al final de una espiración normal</small>
+            </div>
+
+            <div class="input-box hidden" id="hipInputContainer">
+              <label for="inputHip">
+                Perímetro de Cadera
+                <span class="tooltip-trigger" title="Mide alrededor de la mayor prominencia de los glúteos, manteniendo los pies juntos.">?</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="inputHip" min="50" max="200" step="0.1" value="96.0" />
+                <span class="unit-tag" data-unit-type="length">cm</span>
+              </div>
+              <small class="field-help">En la parte más ancha de los glúteos</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2: PLIEGUES CUTÁNEOS (JACKSON-POLLOCK) -->
+        <div class="method-pane" id="paneSkinfold" role="tabpanel">
+          <div class="method-info">
+            <div class="method-info-icon" aria-hidden="true">📐</div>
+            <div>
+              <p>Toma los pliegues en el <strong>lado derecho del cuerpo</strong> con un plicómetro (caliper) en milímetros (mm).</p>
+              <div class="jp-mode-switch">
+                <button type="button" class="jp-mode-btn active" data-jpmode="3">3 Pliegues (Estándar)</button>
+                <button type="button" class="jp-mode-btn" data-jpmode="7">7 Pliegues (Avanzado)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="inputs-grid" id="skinfoldInputsGrid">
+            <!-- Hombres 3 sitios: Pecho, Abdomen, Muslo | Mujeres 3 sitios: Tríceps, Suprailiaco, Muslo -->
+            <div class="input-box sf-field" data-sites="male3,all7">
+              <label for="sfChest">Pectoral (Pecho)</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfChest" min="1" max="80" step="0.5" value="11" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Pliegue diagonal entre axila y pezón</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="female3,all7">
+              <label for="sfTriceps">Tríceps</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfTriceps" min="1" max="80" step="0.5" value="13" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Vertical en la parte posterior media del brazo</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="male3,all7">
+              <label for="sfAbdomen">Abdominal</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfAbdomen" min="1" max="90" step="0.5" value="20" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Vertical a 2 cm a la derecha del ombligo</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="female3,all7">
+              <label for="sfSuprailiac">Suprailiaco</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfSuprailiac" min="1" max="80" step="0.5" value="15" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Diagonal justo encima de la cresta ilíaca</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="male3,female3,all7">
+              <label for="sfThigh">Muslo anterior</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfThigh" min="1" max="80" step="0.5" value="14" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Vertical en el punto medio entre cadera y rodilla</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="all7">
+              <label for="sfSubscapular">Subescapular</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfSubscapular" min="1" max="80" step="0.5" value="14" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Diagonal a 2 cm bajo el ángulo inferior de la escápula</small>
+            </div>
+
+            <div class="input-box sf-field" data-sites="all7">
+              <label for="sfAxilla">Axilar medio</label>
+              <div class="input-wrapper">
+                <input type="number" id="sfAxilla" min="1" max="80" step="0.5" value="10" />
+                <span class="unit-tag">mm</span>
+              </div>
+              <small class="field-help">Vertical en la línea media axilar a nivel del xifoides</small>
+            </div>
+          </div>
+
+          <div class="sf-sum-bar">
+            <span>Suma de pliegues activos (<strong id="sfCountLabel">3 sitios</strong>):</span>
+            <strong id="sfSumValue">45.0 mm</strong>
+          </div>
+        </div>
+
+        <!-- PANEL 3: ESTIMACIÓN POR IMC (DEURENBERG) -->
+        <div class="method-pane" id="paneBmi" role="tabpanel">
+          <div class="method-info">
+            <div class="method-info-icon" aria-hidden="true">⚖️</div>
+            <div>
+              <p><strong>Fórmula de Deurenberg:</strong> Estima el porcentaje de grasa corporal a partir del Índice de Masa Corporal (IMC), la edad y el sexo biológico sin necesidad de cinta métrica ni plicómetro.</p>
+              <p class="method-note">Nota: En personas con alta masa muscular (atletas o entrenamiento de fuerza), el método por IMC puede sobreestimar la grasa corporal; se recomienda contrastar con Marina EE. UU. o Pliegues.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulador de Objetivo -->
+      <hr class="divider" />
+      <div class="goal-simulator">
+        <div class="goal-header">
+          <h3>🎯 Simulador de Objetivo de Grasa Corporal</h3>
+          <span class="goal-target-badge" id="goalTargetLabel">Meta: 14.0%</span>
+        </div>
+        <p class="goal-desc">Desliza para calcular tu peso ideal conservando el 100% de tu masa magra actual:</p>
+        <input type="range" id="inputGoalBf" min="5" max="35" step="0.5" value="14" />
+        <div class="goal-results" id="goalResultsBox">
+          <div class="goal-stat">
+            <span class="goal-stat-label">Peso objetivo estimado</span>
+            <strong class="goal-stat-value" id="goalTargetWeight">—</strong>
+          </div>
+          <div class="goal-stat">
+            <span class="goal-stat-label">Cambio de grasa requerido</span>
+            <strong class="goal-stat-value" id="goalFatDelta">—</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA: RESULTADOS Y DESGLOSE COMPLETO -->
+    <section class="results-column" aria-live="polite">
+      <!-- TARJETA PRINCIPAL DE GRASA CORPORAL -->
+      <div class="card hero-result-card">
+        <div class="hero-top">
+          <div>
+            <span class="method-pill" id="activeMethodBadge">Método Marina de EE. UU.</span>
+            <h2>Porcentaje de Grasa Corporal</h2>
+          </div>
+          <div class="category-chip" id="aceCategoryChip">Fitness</div>
+        </div>
+
+        <div class="hero-score-row">
+          <div class="hero-number-wrap">
+            <span class="hero-number" id="bfPercentageValue">16.4</span>
+            <span class="hero-percent-symbol">%</span>
+          </div>
+          <div class="hero-comparison" id="multiMethodComparison">
+            <div class="comp-item" title="Resultado con Cinta Métrica (Marina EE. UU.)">
+              <span>Marina EE. UU.</span>
+              <strong id="compNavyVal">16.4%</strong>
+            </div>
+            <div class="comp-item" title="Resultado con Pliegues Cutáneos (Jackson-Pollock)">
+              <span>Pliegues JP</span>
+              <strong id="compJpVal">13.3%</strong>
+            </div>
+            <div class="comp-item" title="Resultado estimado por IMC (Deurenberg)">
+              <span>Estimación IMC</span>
+              <strong id="compBmiVal">19.8%</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Espectro ACE -->
+        <div class="spectrum-wrapper">
+          <div class="spectrum-bar" id="aceSpectrumBar">
+            <div class="spectrum-segment seg-essential" style="width: 14%"><span>Esencial</span></div>
+            <div class="spectrum-segment seg-athlete" style="width: 22%"><span>Atleta</span></div>
+            <div class="spectrum-segment seg-fitness" style="width: 16%"><span>Fitness</span></div>
+            <div class="spectrum-segment seg-average" style="width: 24%"><span>Aceptable</span></div>
+            <div class="spectrum-segment seg-obese" style="width: 24%"><span>Obesidad</span></div>
+            <div class="spectrum-pointer" id="spectrumPointer" style="left: 48%">
+              <div class="pointer-dot"></div>
+            </div>
+          </div>
+          <div class="spectrum-ticks" id="aceSpectrumTicks">
+            <!-- Se actualiza dinámicamente según sexo -->
+          </div>
+        </div>
+      </div>
+
+      <!-- DESGLOSE DE COMPOSICIÓN CORPORAL (MASA GRASA VS MAGRA, IMC, FFMI) -->
+      <div class="card breakdown-card">
+        <h3>Desglose de Composición Corporal</h3>
+
+        <!-- Barra de proporción Masa Magra vs Masa Grasa -->
+        <div class="composition-visual">
+          <div class="comp-bar">
+            <div class="comp-bar-lean" id="barLeanWidth" style="width: 83.6%"></div>
+            <div class="comp-bar-fat" id="barFatWidth" style="width: 16.4%"></div>
+          </div>
+          <div class="comp-legend">
+            <div class="legend-item">
+              <span class="dot dot-lean"></span>
+              <span>Masa Magra: <strong id="leanMassLegend">63.5 kg (83.6%)</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="dot dot-fat"></span>
+              <span>Masa Grasa: <strong id="fatMassLegend">12.5 kg (16.4%)</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-tile">
+            <span class="metric-label">Masa Grasa Total</span>
+            <strong class="metric-value" id="fatMassValue">12.5 kg</strong>
+            <span class="metric-sub" id="essentialFatNote">Grasa esencial: ~2.3 kg</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-label">Masa Magra (LBM)</span>
+            <strong class="metric-value" id="leanMassValue">63.5 kg</strong>
+            <span class="metric-sub">Músculo, órganos, hueso y agua</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-label">IMC (Índice de Masa Corporal)</span>
+            <strong class="metric-value" id="bmiValue">24.8</strong>
+            <span class="metric-sub" id="bmiCategorySub">Peso normal (OMS)</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-label">FFMI (Índice Masa Magra)</span>
+            <strong class="metric-value" id="ffmiValue">20.7</strong>
+            <span class="metric-sub" id="ffmiNormalizedSub">Normalizado (1.80m): 21.0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- METABOLISMO BASAL Y GASTO CALÓRICO -->
+      <div class="card metabolism-card">
+        <div class="card-header-inline">
+          <h3>Metabolismo Basal (TMB) y Calorías Diarias</h3>
+          <span class="formula-tag">Katch-McArdle + Mifflin-St Jeor</span>
+        </div>
+
+        <div class="metabolism-grid">
+          <div class="metab-box primary-metab">
+            <span class="metab-title">Tasa Metabólica Basal (Katch-McArdle)</span>
+            <strong class="metab-kcal" id="bmrKatchValue">1,742 kcal/día</strong>
+            <small>Calculado a partir de tu masa magra exacta</small>
+          </div>
+
+          <div class="metab-box secondary-metab">
+            <span class="metab-title">Gasto Energético Total (TDEE)</span>
+            <strong class="metab-kcal" id="tdeeValue">2,700 kcal/día</strong>
+            <small id="tdeeActivityNote">Para mantener tu peso actual</small>
+          </div>
+        </div>
+
+        <div class="calorie-targets">
+          <div class="cal-pill deficit">
+            <span>Déficit (Definición -20%)</span>
+            <strong id="calDeficit">2,160 kcal</strong>
+          </div>
+          <div class="cal-pill maintenance">
+            <span>Mantenimiento</span>
+            <strong id="calMaintenance">2,700 kcal</strong>
+          </div>
+          <div class="cal-pill surplus">
+            <span>Superávit (Volumen +10%)</span>
+            <strong id="calSurplus">2,970 kcal</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DE REFERENCIA ACE Y HISTORIAL LOCAL -->
+      <div class="card reference-card">
+        <div class="tabs-small">
+          <button type="button" class="subtab-btn active" data-subtab="aceTable">Tabla ACE (Referencia)</button>
+          <button type="button" class="subtab-btn" data-subtab="historyPane">Historial Guardado (<span id="historyCount">0</span>)</button>
+        </div>
+
+        <div id="aceTable" class="subtab-content active">
+          <table class="ace-table">
+            <thead>
+              <tr>
+                <th>Categoría (ACE)</th>
+                <th>Mujeres (% Grasa)</th>
+                <th>Hombres (% Grasa)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-cat="Esencial">
+                <td><span class="cat-dot seg-essential"></span>Grasa esencial</td>
+                <td>10% – 13%</td>
+                <td>2% – 5%</td>
+              </tr>
+              <tr data-cat="Atleta">
+                <td><span class="cat-dot seg-athlete"></span>Atletas</td>
+                <td>14% – 20%</td>
+                <td>6% – 13%</td>
+              </tr>
+              <tr data-cat="Fitness">
+                <td><span class="cat-dot seg-fitness"></span>Fitness</td>
+                <td>21% – 24%</td>
+                <td>14% – 17%</td>
+              </tr>
+              <tr data-cat="Aceptable">
+                <td><span class="cat-dot seg-average"></span>Aceptable / Promedio</td>
+                <td>25% – 31%</td>
+                <td>18% – 24%</td>
+              </tr>
+              <tr data-cat="Obesidad">
+                <td><span class="cat-dot seg-obese"></span>Obesidad</td>
+                <td>≥ 32%</td>
+                <td>≥ 25%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="historyPane" class="subtab-content">
+          <div class="history-actions">
+            <button type="button" class="btn-save" id="btnSaveRecord">+ Guardar medición actual</button>
+            <button type="button" class="btn-clear" id="btnClearHistory">Limpiar</button>
+          </div>
+          <div id="historyList" class="history-list">
+            <p class="empty-history">Aún no hay mediciones guardadas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
